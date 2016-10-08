@@ -1,0 +1,26 @@
+{
+  "name": "wechat-server-interaction",
+  "version": "0.0.1",
+  "author": {
+    "name": "linmadan",
+    "email": "772181827@qq.com"
+  },
+  "devDependencies": {
+    "mocha": "^3.1.0",
+    "muk": "^0.5.2",
+    "should": "^11.1.0",
+    "supertest": "^2.0.0"
+  },
+  "dependencies": {
+    "async": "^2.0.1",
+    "bearcat": "^0.4.29",
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "kafka-node": "^0.5.9",
+    "underscore": "^1.8.3",
+    "wechat-crypto": "0.0.2"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --recursive"
+  }
+}

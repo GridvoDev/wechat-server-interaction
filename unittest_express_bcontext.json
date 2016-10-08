@@ -1,0 +1,20 @@
+{
+  "name": "wechat-server-interaction-express-unittest-di",
+  "scan": "lib",
+  "beans": [
+    {
+      "id": "callBackURLAuth",
+      "func": "lib.express.util.callBackURLAuth",
+      "props": [
+        {
+          "name": "__WeChatCrypto__",
+          "ref": "mockWeChatCrypto"
+        }
+      ]
+    },
+    {
+      "id": "mockWeChatCrypto",
+      "func": "test.mock.weChatCrypto"
+    }
+  ]
+}
