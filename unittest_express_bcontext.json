@@ -3,18 +3,12 @@
   "scan": "lib",
   "beans": [
     {
-      "id": "callBackURLAuth",
-      "func": "lib.express.util.callBackURLAuth",
-      "props": [
-        {
-          "name": "__WeChatCrypto__",
-          "ref": "mockWeChatCrypto"
-        }
-      ]
+      "id": "wechatServerCallBackService",
+      "func": "test.mock.application.service.wechatServerCallBackService"
     },
     {
-      "id": "mockWeChatCrypto",
-      "func": "test.mock.weChatCrypto"
+      "id": "suiteSysEventHandleService",
+      "func": "test.mock.application.service.suiteSysEventHandleService"
     }
   ]
 }

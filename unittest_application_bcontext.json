@@ -1,0 +1,34 @@
+{
+  "name": "wechat-server-interaction-application-unittest-di",
+  "scan": "lib",
+  "beans": [
+    {
+      "id": "wechatServerCallBackService",
+      "func": "lib.application.service.wechatServerCallBackService",
+      "props": [
+        {
+          "name": "__WeChatCrypto__",
+          "ref": "mockWeChatCrypto"
+        }
+      ]
+    },
+    {
+      "id": "suiteSysEventHandleService",
+      "func": "lib.application.service.suiteSysEventHandleService",
+      "props": [
+        {
+          "name": "__SuiteTicketArriveTopicProducer__",
+          "ref": "mockSuiteTicketArriveTopicProducer"
+        }
+      ]
+    },
+    {
+      "id": "mockWeChatCrypto",
+      "func": "test.mock.external.weChatCrypto"
+    },
+    {
+      "id": "mockSuiteTicketArriveTopicProducer",
+      "func": "test.mock.infrastructure.message.producer.suiteTicketArriveTopicProducer"
+    }
+  ]
+}
