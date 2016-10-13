@@ -9,6 +9,10 @@
     {
       "id": "suiteSysEventHandleService",
       "func": "test.mock.application.service.suiteSysEventHandleService"
+    },
+    {
+      "id": "authSuiteService",
+      "func": "test.mock.application.service.authSuiteService"
     }
   ]
 }

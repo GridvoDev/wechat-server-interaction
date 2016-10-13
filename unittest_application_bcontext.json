@@ -23,6 +23,12 @@
       ]
     },
     {
+      "id": "authSuiteService",
+      "func": "lib.application.service.authSuiteService",
+      "props": [
+      ]
+    },
+    {
       "id": "mockWeChatCrypto",
       "func": "test.mock.external.weChatCrypto"
     },

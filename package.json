@@ -17,6 +17,7 @@
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
     "kafka-node": "^0.5.9",
+    "request": "^2.75.0",
     "underscore": "^1.8.3",
     "wechat-crypto": "0.0.2",
     "xml2js": "^0.4.17"

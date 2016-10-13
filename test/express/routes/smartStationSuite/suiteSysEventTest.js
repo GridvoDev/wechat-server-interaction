@@ -6,7 +6,6 @@ var request = require('supertest');
 var express = require('express');
 var bodyParser = require('body-parser');
 var suiteSysEventRouter = require('../../../../lib/express/routes/smartStationSuite/suiteSysEvent.js');
-var errCodeTable = require('../../../../lib/application/util/errCode.js');
 
 describe('suiteSysEvent route use case test', function () {
     var app;
