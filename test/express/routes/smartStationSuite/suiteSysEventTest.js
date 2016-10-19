@@ -82,10 +82,61 @@ describe('suiteSysEvent route use case test', function () {
     });
     describe('#post:/suites/smart-station-suite/suite-sys-event?msg_signature=&timestamp=&nonce=', function () {
         context('wechat server post suite sys event request ', function () {
+            it("should response fail text to wechat server,if InfoType is unknown", function (done) {
+                var body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[un_known]]></InfoType><TimeStamp>1403610513</TimeStamp><SuiteTicket><![CDATA[SuiteTicket]]></SuiteTicket></xml>";
+                request(server)
+                    .post(`/suites/smart-station-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=un_known`)
+                    .send(body)
+                    .set('Content-Type', 'text/plain')
+                    .expect(200)
+                    .expect('Content-Type', /text/)
+                    .end(function (err, res) {
+                        if (err) {
+                            done(err);
+                            return;
+                        }
+                        res.text.should.be.eql("fail");
+                        done();
+                    });
+            });
             it("should response success text to wechat server,and suite-ticket-arrive topic message producer's  produceMessage methods can be call if InfoType is suite_ticket", function (done) {
                 var body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[suite_ticket]]></InfoType><TimeStamp>1403610513</TimeStamp><SuiteTicket><![CDATA[SuiteTicket]]></SuiteTicket></xml>";
                 request(server)
                     .post(`/suites/smart-station-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=suite_ticket`)
+                    .send(body)
+                    .set('Content-Type', 'text/plain')
+                    .expect(200)
+                    .expect('Content-Type', /text/)
+                    .end(function (err, res) {
+                        if (err) {
+                            done(err);
+                            return;
+                        }
+                        res.text.should.be.eql("success");
+                        done();
+                    });
+            });
+            it("should response success text to wechat server,and corp-create-auth topic message producer's  produceMessage methods can be call if InfoType is create_auth", function (done) {
+                var body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[create_auth]]></InfoType><TimeStamp>1403610513</TimeStamp></xml>";
+                request(server)
+                    .post(`/suites/smart-station-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=create_auth`)
+                    .send(body)
+                    .set('Content-Type', 'text/plain')
+                    .expect(200)
+                    .expect('Content-Type', /text/)
+                    .end(function (err, res) {
+                        if (err) {
+                            done(err);
+                            return;
+                        }
+                        res.text.should.be.eql("success");
+                        done();
+                    });
+            });
+            it("should response success text to wechat server,and corp-cancel-auth topic message producer's  produceMessage methods can be call if InfoType is cancel_auth", function (done) {
+                var body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[cancel_auth]]></InfoType><TimeStamp>1403610513</TimeStamp></xml>";
+                request(server)
+                    .post(`/suites/smart-station-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=cancel_auth`)
                     .send(body)
                     .set('Content-Type', 'text/plain')
                     .expect(200)

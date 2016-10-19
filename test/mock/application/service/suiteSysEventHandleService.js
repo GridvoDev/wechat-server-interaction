@@ -11,4 +11,12 @@ Service.prototype.handleSuiteTicketArriveSysEvent = function (sysEventData, call
     callback(null, true);
 };
 
+Service.prototype.handleCreateAuthSysEvent = function (sysEventData, callback) {
+    callback(null, true);
+};
+
+Service.prototype.handleCancelAuthSysEvent = function (sysEventData, callback) {
+    callback(null, true);
+};
+
 module.exports = Service;

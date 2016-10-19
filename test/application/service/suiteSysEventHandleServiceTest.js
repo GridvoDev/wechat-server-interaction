@@ -28,4 +28,34 @@ describe('suiteSysEventHandleService use case test', function () {
             });
         });
     });
+    describe('#handleCreateAuthSysEvent(sysEventData,callback)', function () {
+        context('wechat server push sys event infotype is create_auth)', function () {
+            it('return true if handle success', function (done) {
+                var sysEventData = {};
+                sysEventData.SuiteId = "wxfc918a2d200c9a4c";
+                sysEventData.InfoType = "create_auth";
+                sysEventData.TimeStamp = 1403610513;
+                sysEventData.AuthCode = "AuthCode";
+                service.handleCreateAuthSysEvent(sysEventData, (err, isSuccess)=> {
+                    isSuccess.should.be.eql(true);
+                    done();
+                });
+            });
+        });
+    });
+    describe('#handleCancelAuthSysEvent(sysEventData,callback)', function () {
+        context('wechat server push sys event infotype is cancel_auth)', function () {
+            it('return true if handle success', function (done) {
+                var sysEventData = {};
+                sysEventData.SuiteId = "wxfc918a2d200c9a4c";
+                sysEventData.InfoType = "cancel_auth";
+                sysEventData.TimeStamp = 1403610513;
+                sysEventData.AuthCorpId = "wxf8b4f85f3a794e77";
+                service.handleCancelAuthSysEvent(sysEventData, (err, isSuccess)=> {
+                    isSuccess.should.be.eql(true);
+                    done();
+                });
+            });
+        });
+    });
 });

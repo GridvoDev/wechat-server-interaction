@@ -18,7 +18,15 @@
       "props": [
         {
           "name": "__SuiteTicketArriveTopicProducer__",
-          "ref": "mockSuiteTicketArriveTopicProducer"
+          "ref": "mockTopicProducer"
+        },
+        {
+          "name": "__CorpCreateAuthTopicProducer__",
+          "ref": "mockTopicProducer"
+        },
+        {
+          "name": "__CorpCancelAuthTopicProducer__",
+          "ref": "mockTopicProducer"
         }
       ]
     },
@@ -26,6 +34,10 @@
       "id": "authSuiteService",
       "func": "lib.application.service.authSuiteService",
       "props": [
+        {
+          "name": "__CorpCreateAuthTopicProducer__",
+          "ref": "mockTopicProducer"
+        }
       ]
     },
     {
@@ -33,8 +45,8 @@
       "func": "test.mock.external.weChatCrypto"
     },
     {
-      "id": "mockSuiteTicketArriveTopicProducer",
-      "func": "test.mock.infrastructure.message.producer.suiteTicketArriveTopicProducer"
+      "id": "mockTopicProducer",
+      "func": "test.mock.infrastructure.message.producer.topicProducer"
     }
   ]
 }

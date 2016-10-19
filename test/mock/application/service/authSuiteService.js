@@ -11,4 +11,12 @@ Service.prototype.getSuiteAuthURL = function (suiteID, callback) {
     callback(null, "suite-auth-url");
 };
 
+Service.prototype.completeAuth = function (suiteID, authCode, callback) {
+    if (authCode == "fail") {
+        callback(null, false);
+        return;
+    }
+    callback(null, true);
+};
+
 module.exports = Service;

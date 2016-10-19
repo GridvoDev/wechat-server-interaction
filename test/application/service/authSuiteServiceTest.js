@@ -42,4 +42,20 @@ describe('authSuiteService use case test', function () {
             });
         });
     });
+    describe('#completeAuth(suiteID, authCode, callback)', function () {
+        context('corp complete auth suite)', function () {
+            it('return false if no suiteID or authCode', function (done) {
+                service.completeAuth(null, null, (err, isSuccess)=> {
+                    isSuccess.should.be.eql(false);
+                    done();
+                });
+            });
+            it('return true if CorpCreateAuthTopicProducer produce message success', function (done) {
+                service.completeAuth("suiteID", "authCode", (err, isSuccess)=> {
+                    isSuccess.should.be.eql(true);
+                    done();
+                });
+            });
+        });
+    });
 });
