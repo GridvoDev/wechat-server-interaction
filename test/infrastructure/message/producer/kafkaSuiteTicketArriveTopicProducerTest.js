@@ -15,7 +15,7 @@ describe('kafkaSuiteTicketArriveTopicProducer use case test', function () {
         context('produce suite-ticket-arrive topic message', function () {
             it('should return true if message is send success', function (done) {
                 var message = {
-                    suite_id: "suiteID",
+                    suiteID: "suiteID",
                     ticket: "ticket",
                     timestamp : 1403610513000
                 };
@@ -33,7 +33,7 @@ describe('kafkaSuiteTicketArriveTopicProducer use case test', function () {
                     consumer = new kafka.Consumer(client, topics, options);
                     consumer.on('message', function (message) {
                         var suiteTicketData = JSON.parse(message.value);
-                        suiteTicketData.suite_id.should.be.eql("suiteID");
+                        suiteTicketData.suiteID.should.be.eql("suiteID");
                         suiteTicketData.ticket.should.be.eql("ticket");
                         suiteTicketData.timestamp.should.be.eql(1403610513000);
                         done();

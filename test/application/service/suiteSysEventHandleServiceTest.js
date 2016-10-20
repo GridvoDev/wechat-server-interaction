@@ -58,4 +58,19 @@ describe('suiteSysEventHandleService use case test', function () {
             });
         });
     });
+    describe('#handleChangeAuthSysEvent(sysEventData,callback)', function () {
+        context('wechat server push sys event infotype is change_auth)', function () {
+            it('return true if handle success', function (done) {
+                var sysEventData = {};
+                sysEventData.SuiteId = "wxfc918a2d200c9a4c";
+                sysEventData.InfoType = "change_auth";
+                sysEventData.TimeStamp = 1403610513;
+                sysEventData.AuthCorpId = "wxf8b4f85f3a794e77";
+                service.handleChangeAuthSysEvent(sysEventData, (err, isSuccess)=> {
+                    isSuccess.should.be.eql(true);
+                    done();
+                });
+            });
+        });
+    });
 });

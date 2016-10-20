@@ -15,8 +15,8 @@ describe('kafkaCorpCancelAuthTopicProducer use case test', function () {
         context('produce corp-cancel-auth topic message', function () {
             it('should return true if message is send success', function (done) {
                 var message = {
-                    suite_id: "suiteID",
-                    auth_corp_id: "wxf8b4f85f3a794e77",
+                    suiteID: "suiteID",
+                    corpID: "wxf8b4f85f3a794e77",
                     timestamp: 1403610513000
                 };
                 producer.produceMessage(message, (err, isSuccess)=> {
@@ -33,8 +33,8 @@ describe('kafkaCorpCancelAuthTopicProducer use case test', function () {
                     consumer = new kafka.Consumer(client, topics, options);
                     consumer.on('message', function (message) {
                         var data = JSON.parse(message.value);
-                        data.suite_id.should.be.eql("suiteID");
-                        data.auth_corp_id.should.be.eql("wxf8b4f85f3a794e77");
+                        data.suiteID.should.be.eql("suiteID");
+                        data.corpID.should.be.eql("wxf8b4f85f3a794e77");
                         data.timestamp.should.be.eql(1403610513000);
                         done();
 

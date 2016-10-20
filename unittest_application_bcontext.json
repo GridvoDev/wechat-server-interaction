@@ -27,6 +27,10 @@
         {
           "name": "__CorpCancelAuthTopicProducer__",
           "ref": "mockTopicProducer"
+        },
+        {
+          "name": "__CorpChangeAuthTopicProducer__",
+          "ref": "mockTopicProducer"
         }
       ]
     },

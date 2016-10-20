@@ -150,6 +150,23 @@ describe('suiteSysEvent route use case test', function () {
                         done();
                     });
             });
+            it("should response success text to wechat server,and corp-change-auth topic message producer's  produceMessage methods can be call if InfoType is change_auth", function (done) {
+                var body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[change_auth]]></InfoType><TimeStamp>1403610513</TimeStamp></xml>";
+                request(server)
+                    .post(`/suites/smart-station-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=change_auth`)
+                    .send(body)
+                    .set('Content-Type', 'text/plain')
+                    .expect(200)
+                    .expect('Content-Type', /text/)
+                    .end(function (err, res) {
+                        if (err) {
+                            done(err);
+                            return;
+                        }
+                        res.text.should.be.eql("success");
+                        done();
+                    });
+            });
         });
     });
     after(function (done) {

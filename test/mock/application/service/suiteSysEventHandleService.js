@@ -19,4 +19,8 @@ Service.prototype.handleCancelAuthSysEvent = function (sysEventData, callback) {
     callback(null, true);
 };
 
+Service.prototype.handleChangeAuthSysEvent = function (sysEventData, callback) {
+    callback(null, true);
+};
+
 module.exports = Service;
