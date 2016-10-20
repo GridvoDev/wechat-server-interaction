@@ -31,7 +31,7 @@ describe('authSuiteService use case test', function () {
                     callback(null, {}, {
                         errcode: 200,
                         errmsg: "ok",
-                        suite_auth_url: "suite-auth-url"
+                        suiteAuthUrl: "suite-auth-url"
                     });
                 };
                 muk(service, "__httpRequest__", mockRequest);
