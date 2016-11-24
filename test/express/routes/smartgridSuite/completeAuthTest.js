@@ -4,7 +4,7 @@ var bearcat = require('bearcat');
 var should = require('should');
 var request = require('supertest');
 var express = require('express');
-var completeAuthRouter = require('../../../../lib/express/routes/smartStationSuite/completeAuth.js');
+var completeAuthRouter = require('../../../../lib/express/routes/smartgridSuite/completeAuth');
 
 describe('completeAuth route use case test', function () {
     var app;
@@ -13,7 +13,7 @@ describe('completeAuth route use case test', function () {
         async.waterfall([
             function (callback) {
                 app = express();
-                app.use('/suites/smart-station-suite', completeAuthRouter);
+                app.use('/suites/smartgrid-suite', completeAuthRouter);
                 server = app.listen(3001, callback);
             },
             function (callback) {
@@ -32,11 +32,11 @@ describe('completeAuth route use case test', function () {
             done();
         });
     });
-    describe('#get:/suites/smart-station-suite/complete-auth?auth_code=&expires_in=&state=', function () {
+    describe('#get:/suites/smartgrid-suite/complete-auth?auth_code=&expires_in=&state=', function () {
         context('corp auth this suite', function () {
             it('should response fail text if query is fail', function (done) {
                 request(server)
-                    .get(`/suites/smart-station-suite/complete-auth`)
+                    .get(`/suites/smartgrid-suite/complete-auth`)
                     .expect(200)
                     .end((err, res)=> {
                         if (err) {
@@ -49,7 +49,7 @@ describe('completeAuth route use case test', function () {
             });
             it('should response fail text if authSuiteService completeAuth methods callback false', function (done) {
                 request(server)
-                    .get(`/suites/smart-station-suite/complete-auth?auth_code=fail&expires_in=1200&state=ok`)
+                    .get(`/suites/smartgrid-suite/complete-auth?auth_code=fail&expires_in=1200&state=ok`)
                     .expect(200)
                     .end((err, res)=> {
                         if (err) {
@@ -62,7 +62,7 @@ describe('completeAuth route use case test', function () {
             });
             it('should response success text if authSuiteService completeAuth methods callback true', function (done) {
                 request(server)
-                    .get(`/suites/smart-station-suite/complete-auth?auth_code=xxxxx&expires_in=1200&state=ok`)
+                    .get(`/suites/smartgrid-suite/complete-auth?auth_code=xxxxx&expires_in=1200&state=ok`)
                     .expect(200)
                     .end((err, res)=> {
                         if (err) {

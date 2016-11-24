@@ -8,8 +8,25 @@ var KafkaSuiteTicketArriveTopicProducer = require('../../../../lib/infrastructur
 describe('kafkaSuiteTicketArriveTopicProducer use case test', function () {
     var producer;
     var consumer;
-    before(function () {
-        producer = new KafkaSuiteTicketArriveTopicProducer();
+    before(function (done) {
+        var ZOOKEEPER_SERVICE_HOST = process.env.ZOOKEEPER_SERVICE_HOST ? process.env.ZOOKEEPER_SERVICE_HOST : "127.0.0.1";
+        var ZOOKEEPER_SERVICE_PORT = process.env.ZOOKEEPER_SERVICE_PORT ? process.env.ZOOKEEPER_SERVICE_PORT : "2181";
+        var Producer = kafka.Producer;
+        var client = new kafka.Client(`${ZOOKEEPER_SERVICE_HOST}:${ZOOKEEPER_SERVICE_PORT}`);
+        var initProducer = new Producer(client);
+        initProducer.on('ready', function () {
+            initProducer.createTopics(['suite-ticket-arrive'], true, (err, data)=> {
+                client.refreshMetadata(['suite-ticket-arrive'], ()=> {
+                    producer = new KafkaSuiteTicketArriveTopicProducer();
+                    initProducer.close(()=> {
+                        done();
+                    });
+                });
+            });
+        });
+        initProducer.on('error', (err)=> {
+            done(err);
+        });
     });
     describe('#produceMessage(message, callback)', function () {
         context('produce suite-ticket-arrive topic message', function () {
@@ -17,7 +34,7 @@ describe('kafkaSuiteTicketArriveTopicProducer use case test', function () {
                 var message = {
                     suiteID: "suiteID",
                     ticket: "ticket",
-                    timestamp : 1403610513000
+                    timestamp: 1403610513000
                 };
                 producer.produceMessage(message, (err, isSuccess)=> {
                     isSuccess.should.be.eql(true);
@@ -44,8 +61,7 @@ describe('kafkaSuiteTicketArriveTopicProducer use case test', function () {
         });
     });
     after(function () {
-        consumer.close(()=> {
+        consumer.close(true, ()=> {
         });
     });
-})
-;
+});

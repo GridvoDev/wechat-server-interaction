@@ -8,8 +8,25 @@ var KafkaCorpChangeAuthTopicProducer = require('../../../../lib/infrastructure/m
 describe('kafkaCorpChangeAuthTopicProducer use case test', function () {
     var producer;
     var consumer;
-    before(function () {
-        producer = new KafkaCorpChangeAuthTopicProducer();
+    before(function (done) {
+        var ZOOKEEPER_SERVICE_HOST = process.env.ZOOKEEPER_SERVICE_HOST ? process.env.ZOOKEEPER_SERVICE_HOST : "127.0.0.1";
+        var ZOOKEEPER_SERVICE_PORT = process.env.ZOOKEEPER_SERVICE_PORT ? process.env.ZOOKEEPER_SERVICE_PORT : "2181";
+        var Producer = kafka.Producer;
+        var client = new kafka.Client(`${ZOOKEEPER_SERVICE_HOST}:${ZOOKEEPER_SERVICE_PORT}`);
+        var initProducer = new Producer(client);
+        initProducer.on('ready', function () {
+            initProducer.createTopics(['corp-change-auth'], true, (err, data)=> {
+                client.refreshMetadata(['corp-change-auth'], ()=> {
+                    producer = new KafkaCorpChangeAuthTopicProducer();
+                    initProducer.close(()=> {
+                        done();
+                    });
+                });
+            });
+        });
+        initProducer.on('error', (err)=> {
+            done(err);
+        });
     });
     describe('#produceMessage(message, callback)', function () {
         context('produce corp-change-auth topic message', function () {
@@ -44,8 +61,7 @@ describe('kafkaCorpChangeAuthTopicProducer use case test', function () {
         });
     });
     after(function () {
-        consumer.close(()=> {
+        consumer.close(true, ()=> {
         });
     });
-})
-;
+});

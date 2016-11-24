@@ -8,8 +8,25 @@ var KafkaCorpCancelAuthTopicProducer = require('../../../../lib/infrastructure/m
 describe('kafkaCorpCancelAuthTopicProducer use case test', function () {
     var producer;
     var consumer;
-    before(function () {
-        producer = new KafkaCorpCancelAuthTopicProducer();
+    before(function (done) {
+        var ZOOKEEPER_SERVICE_HOST = process.env.ZOOKEEPER_SERVICE_HOST ? process.env.ZOOKEEPER_SERVICE_HOST : "127.0.0.1";
+        var ZOOKEEPER_SERVICE_PORT = process.env.ZOOKEEPER_SERVICE_PORT ? process.env.ZOOKEEPER_SERVICE_PORT : "2181";
+        var Producer = kafka.Producer;
+        var client = new kafka.Client(`${ZOOKEEPER_SERVICE_HOST}:${ZOOKEEPER_SERVICE_PORT}`);
+        var initProducer = new Producer(client);
+        initProducer.on('ready', function () {
+            initProducer.createTopics(['corp-cancel-auth'], true, (err, data)=> {
+                client.refreshMetadata(['corp-cancel-auth'], ()=> {
+                    producer = new KafkaCorpCancelAuthTopicProducer();
+                    initProducer.close(()=> {
+                        done();
+                    });
+                });
+            });
+        });
+        initProducer.on('error', (err)=> {
+            done(err);
+        });
     });
     describe('#produceMessage(message, callback)', function () {
         context('produce corp-cancel-auth topic message', function () {
@@ -44,8 +61,7 @@ describe('kafkaCorpCancelAuthTopicProducer use case test', function () {
         });
     });
     after(function () {
-        consumer.close(()=> {
+        consumer.close(true, ()=> {
         });
     });
-})
-;
+});

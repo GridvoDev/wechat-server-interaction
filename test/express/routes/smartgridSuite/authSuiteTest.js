@@ -4,7 +4,7 @@ var bearcat = require('bearcat');
 var should = require('should');
 var request = require('supertest');
 var express = require('express');
-var authSuiteRouter = require('../../../../lib/express/routes/smartStationSuite/authSuite.js');
+var authSuiteRouter = require('../../../../lib/express/routes/smartgridSuite/authSuite');
 
 describe('suiteSysEvent route use case test', function () {
     var app;
@@ -13,7 +13,7 @@ describe('suiteSysEvent route use case test', function () {
         async.waterfall([
             function (callback) {
                 app = express();
-                app.use('/suites/smart-station-suite', authSuiteRouter);
+                app.use('/suites/smartgrid-suite', authSuiteRouter);
                 server = app.listen(3001, callback);
             },
             function (callback) {
@@ -32,11 +32,11 @@ describe('suiteSysEvent route use case test', function () {
             done();
         });
     });
-    describe('#get:/suites/smart-station-suite/auth-suite', function () {
+    describe('#get:/suites/smartgrid-suite/auth-suite', function () {
         context('corp auth this suite', function () {
             it('should redirect to wechat server auth url', function (done) {
                 request(server)
-                    .get(`/suites/smart-station-suite/auth-suite`)
+                    .get(`/suites/smartgrid-suite/auth-suite`)
                     .expect(302)
                     .end(()=> {
                         done();

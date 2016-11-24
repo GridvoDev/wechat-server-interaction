@@ -16,7 +16,7 @@
     "bearcat": "^0.4.29",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
-    "kafka-node": "^0.5.9",
+    "kafka-node": "^1.0.7",
     "request": "^2.75.0",
     "underscore": "^1.8.3",
     "wechat-crypto": "0.0.2",

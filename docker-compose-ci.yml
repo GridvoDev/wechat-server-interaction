@@ -3,22 +3,21 @@ services:
   zookeeper:
     image: wurstmeister/zookeeper
     ports:
-      - "127.0.0.1:2181:2181"
+      - "2181:2181"
   kafka:
     image: wurstmeister/kafka
     ports:
-      - "127.0.0.1:9092:9092"
-      - "127.0.0.1:9093:9093"
+      - "9092:9092"
+      - "9093:9093"
     depends_on:
       - zookeeper
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   wechat-server-interaction:
     build: .
-    image: wechat-server-interaction:dev
+    image: gridvo/wechat-server-interaction:dev
     container_name: wechat-server-interaction
     depends_on:
      - zookeeper
@@ -26,9 +25,9 @@ services:
     environment:
       ZOOKEEPER_SERVICE_HOST: zookeeper
       ZOOKEEPER_SERVICE_PORT: 2181
-      IS_CI: 1
   unittest:
     image: node:latest
+    container_name: unittest
     volumes_from:
      - wechat-server-interaction
     depends_on:
@@ -36,7 +35,7 @@ services:
      - kafka
      - wechat-server-interaction
     environment:
-      MONGODB_SERVICE_HOST: zookeeper
-      MONGODB_SERVICE_PORT: 2181
+      ZOOKEEPER_SERVICE_HOST: zookeeper
+      ZOOKEEPER_SERVICE_PORT: 2181
     working_dir: /home/wechat-server-interaction
     command: npm test

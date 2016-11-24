@@ -8,8 +8,25 @@ var KafkaCorpCreateAuthTopicProducer = require('../../../../lib/infrastructure/m
 describe('kafkaCorpCreateAuthTopicProducer use case test', function () {
     var producer;
     var consumer;
-    before(function () {
-        producer = new KafkaCorpCreateAuthTopicProducer();
+    before(function (done) {
+        var ZOOKEEPER_SERVICE_HOST = process.env.ZOOKEEPER_SERVICE_HOST ? process.env.ZOOKEEPER_SERVICE_HOST : "127.0.0.1";
+        var ZOOKEEPER_SERVICE_PORT = process.env.ZOOKEEPER_SERVICE_PORT ? process.env.ZOOKEEPER_SERVICE_PORT : "2181";
+        var Producer = kafka.Producer;
+        var client = new kafka.Client(`${ZOOKEEPER_SERVICE_HOST}:${ZOOKEEPER_SERVICE_PORT}`);
+        var initProducer = new Producer(client);
+        initProducer.on('ready', function () {
+            initProducer.createTopics(['corp-create-auth'], true, (err, data)=> {
+                client.refreshMetadata(['corp-create-auth'], ()=> {
+                    producer = new KafkaCorpCreateAuthTopicProducer();
+                    initProducer.close(()=> {
+                        done();
+                    });
+                });
+            });
+        });
+        initProducer.on('error', (err)=> {
+            done(err);
+        });
     });
     describe('#produceMessage(message, callback)', function () {
         context('produce corp-create-auth topic message', function () {
@@ -44,8 +61,7 @@ describe('kafkaCorpCreateAuthTopicProducer use case test', function () {
         });
     });
     after(function () {
-        consumer.close(()=> {
+        consumer.close(true, ()=> {
         });
     });
-})
-;
+});
