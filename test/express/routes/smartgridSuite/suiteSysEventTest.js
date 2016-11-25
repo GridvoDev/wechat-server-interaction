@@ -1,10 +1,10 @@
+'use strict';
 var _ = require('underscore');
 var async = require('async');
 var bearcat = require('bearcat');
 var should = require('should');
 var request = require('supertest');
 var express = require('express');
-var bodyParser = require('body-parser');
 var suiteSysEventRouter = require('../../../../lib/express/routes/smartgridSuite/suiteSysEvent');
 
 describe('suiteSysEvent route use case test', function () {
@@ -14,7 +14,6 @@ describe('suiteSysEvent route use case test', function () {
         async.waterfall([
             function (callback) {
                 app = express();
-                app.use(bodyParser.text());
                 app.use('/suites/smartgrid-suite', suiteSysEventRouter);
                 server = app.listen(3001, callback);
             },
@@ -84,10 +83,10 @@ describe('suiteSysEvent route use case test', function () {
         context('wechat server post suite sys event request ', function () {
             it("should response fail text to wechat server,if InfoType is unknown", function (done) {
                 var body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[un_known]]></InfoType><TimeStamp>1403610513</TimeStamp><SuiteTicket><![CDATA[SuiteTicket]]></SuiteTicket></xml>";
-                request(server)
+                var req = request(server)
                     .post(`/suites/smartgrid-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=un_known`)
                     .send(body)
-                    .set('Content-Type', 'text/plain')
+                    .set('Content-Type', 'application/octet-stream')
                     .expect(200)
                     .expect('Content-Type', /text/)
                     .end(function (err, res) {
@@ -104,7 +103,7 @@ describe('suiteSysEvent route use case test', function () {
                 request(server)
                     .post(`/suites/smartgrid-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=suite_ticket`)
                     .send(body)
-                    .set('Content-Type', 'text/plain')
+                    .set('Content-Type', 'application/octet-stream')
                     .expect(200)
                     .expect('Content-Type', /text/)
                     .end(function (err, res) {
@@ -121,7 +120,7 @@ describe('suiteSysEvent route use case test', function () {
                 request(server)
                     .post(`/suites/smartgrid-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=create_auth`)
                     .send(body)
-                    .set('Content-Type', 'text/plain')
+                    .set('Content-Type', 'application/octet-stream')
                     .expect(200)
                     .expect('Content-Type', /text/)
                     .end(function (err, res) {
@@ -138,7 +137,7 @@ describe('suiteSysEvent route use case test', function () {
                 request(server)
                     .post(`/suites/smartgrid-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=cancel_auth`)
                     .send(body)
-                    .set('Content-Type', 'text/plain')
+                    .set('Content-Type', 'application/octet-stream')
                     .expect(200)
                     .expect('Content-Type', /text/)
                     .end(function (err, res) {
@@ -155,7 +154,7 @@ describe('suiteSysEvent route use case test', function () {
                 request(server)
                     .post(`/suites/smartgrid-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=change_auth`)
                     .send(body)
-                    .set('Content-Type', 'text/plain')
+                    .set('Content-Type', 'application/octet-stream')
                     .expect(200)
                     .expect('Content-Type', /text/)
                     .end(function (err, res) {

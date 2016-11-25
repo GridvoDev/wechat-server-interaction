@@ -5,6 +5,7 @@ var express = require('express');
 var authSuiteRouter = require('./lib/express/routes/smartgridSuite/authSuite');
 var completeAuthRouter = require('./lib/express/routes/smartgridSuite/completeAuth');
 var suiteSysEventRouter = require('./lib/express/routes/smartgridSuite/suiteSysEvent');
+var userEventRouter = require('./lib/express/routes/smartgridSuite/waterStation/userEvent');
 
 var app;
 var bearcatContextPath = require.resolve("./production_bcontext.json");
@@ -41,6 +42,7 @@ bearcat.start(function () {
     app.use('/suites/smartgrid-suite', authSuiteRouter);
     app.use('/suites/smartgrid-suite', completeAuthRouter);
     app.use('/suites/smartgrid-suite', suiteSysEventRouter);
+    app.use('/suites/smartgrid-suite/apps/water-station', userEventRouter);
     app.set('bearcat', bearcat);
     app.listen(3001);
     console.log("wechat-server-interaction service is starting...");
