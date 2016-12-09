@@ -1,46 +1,51 @@
 'use strict';
-var _ = require('underscore');
-var async = require('async');
-var bearcat = require('bearcat');
-var should = require('should');
-var request = require('supertest');
-var express = require('express');
-var suiteSysEventRouter = require('../../../../lib/express/routes/smartgridSuite/suiteSysEvent');
+const _ = require('underscore');
+const co = require('co');
+const should = require('should');
+const request = require('supertest');
+const express = require('express');
+const suiteSysEventRouter = require('../../../../lib/express/routes/smartgridSuite/suiteSysEvent');
+const MockSuiteSysEventHandleService = require('../../../mock/application/service/suiteSysEventHandleService');
+const MockWechatServerCallBackService = require('../../../mock/application/service/wechatServerCallBackService');
 
-describe('suiteSysEvent route use case test', function () {
-    var app;
-    var server;
-    before(function (done) {
-        async.waterfall([
-            function (callback) {
+describe('suiteSysEvent route use case test', ()=> {
+    let app;
+    let server;
+    before(done=> {
+        function setupExpress() {
+            return new Promise((resolve, reject)=> {
                 app = express();
                 app.use('/suites/smartgrid-suite', suiteSysEventRouter);
-                server = app.listen(3001, callback);
-            },
-            function (callback) {
-                var bearcatContextPath = require.resolve("../../../../unittest_express_bcontext.json");
-                bearcat.createApp([bearcatContextPath]);
-                bearcat.start(function () {
-                    app.set('bearcat', bearcat);
-                    callback(null);
+                let suiteSysEventHandleService = new MockSuiteSysEventHandleService();
+                app.set('suiteSysEventHandleService', suiteSysEventHandleService);
+                let wechatServerCallBackService = new MockWechatServerCallBackService();
+                app.set('wechatServerCallBackService', wechatServerCallBackService);
+                server = app.listen(3001, err=> {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
                 });
-            }
-        ], function (err) {
-            if (err) {
-                done(err);
-                return;
-            }
+            });
+        };
+        function* setup() {
+            yield setupExpress();
+        };
+        co(setup).then(()=> {
             done();
+        }).catch(err=> {
+            done(err);
         });
     });
-    describe('#get:/suites/smartgrid-suite/suite-sys-event?msg_signature=&timestamp=&nonce=&echostr=', function () {
-        context('wechat server request suite sys event callback url', function () {
-            it('should response wechat server', function (done) {
+    describe('#get:/suites/smartgrid-suite/suite-sys-event?msg_signature=&timestamp=&nonce=&echostr=', ()=> {
+        context('wechat server request suite sys event callback url', ()=> {
+            it('should response wechat server', done=> {
                 request(server)
                     .get(`/suites/smartgrid-suite/suite-sys-event?timestamp=13500001234&nonce=nonce&echostr=encrypt`)
                     .expect(200)
                     .expect('Content-Type', /text/)
-                    .end(function (err, res) {
+                    .end((err, res)=> {
                         if (err) {
                             done(err);
                             return;
@@ -49,12 +54,12 @@ describe('suiteSysEvent route use case test', function () {
                         done();
                     });
             });
-            it('should response wechat server', function (done) {
+            it('should response wechat server', done=> {
                 request(server)
                     .get(`/suites/smartgrid-suite/suite-sys-event?msg_signature=signature&timestamp=13500001234&nonce=nonce`)
                     .expect(200)
                     .expect('Content-Type', /text/)
-                    .end(function (err, res) {
+                    .end((err, res)=> {
                         if (err) {
                             done(err);
                             return;
@@ -63,12 +68,12 @@ describe('suiteSysEvent route use case test', function () {
                         done();
                     });
             });
-            it('should response wechat server', function (done) {
+            it('should response wechat server', done=> {
                 request(server)
                     .get(`/suites/smartgrid-suite/suite-sys-event?msg_signature=signature&timestamp=13500001234&nonce=nonce&echostr=encrypt`)
                     .expect(200)
                     .expect('Content-Type', /text/)
-                    .end(function (err, res) {
+                    .end((err, res)=> {
                         if (err) {
                             done(err);
                             return;
@@ -79,17 +84,17 @@ describe('suiteSysEvent route use case test', function () {
             });
         });
     });
-    describe('#post:/suites/smartgrid-suite/suite-sys-event?msg_signature=&timestamp=&nonce=', function () {
-        context('wechat server post suite sys event request ', function () {
-            it("should response fail text to wechat server,if InfoType is unknown", function (done) {
-                var body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[un_known]]></InfoType><TimeStamp>1403610513</TimeStamp><SuiteTicket><![CDATA[SuiteTicket]]></SuiteTicket></xml>";
-                var req = request(server)
+    describe('#post:/suites/smartgrid-suite/suite-sys-event?msg_signature=&timestamp=&nonce=', ()=> {
+        context('wechat server post suite sys event request ', ()=> {
+            it("should response fail text to wechat server,if InfoType is unknown", done=> {
+                let body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[un_known]]></InfoType><TimeStamp>1403610513</TimeStamp><SuiteTicket><![CDATA[SuiteTicket]]></SuiteTicket></xml>";
+                let req = request(server)
                     .post(`/suites/smartgrid-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=un_known`)
                     .send(body)
                     .set('Content-Type', 'application/octet-stream')
                     .expect(200)
                     .expect('Content-Type', /text/)
-                    .end(function (err, res) {
+                    .end((err, res)=> {
                         if (err) {
                             done(err);
                             return;
@@ -98,15 +103,15 @@ describe('suiteSysEvent route use case test', function () {
                         done();
                     });
             });
-            it("should response success text to wechat server,and suite-ticket-arrive topic message producer's  produceMessage methods can be call if InfoType is suite_ticket", function (done) {
-                var body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[suite_ticket]]></InfoType><TimeStamp>1403610513</TimeStamp><SuiteTicket><![CDATA[SuiteTicket]]></SuiteTicket></xml>";
+            it("should response success text to wechat server,and suite-ticket-arrive topic message producer's  produceMessage methods can be call if InfoType is suite_ticket", done=> {
+                let body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[suite_ticket]]></InfoType><TimeStamp>1403610513</TimeStamp><SuiteTicket><![CDATA[SuiteTicket]]></SuiteTicket></xml>";
                 request(server)
                     .post(`/suites/smartgrid-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=suite_ticket`)
                     .send(body)
                     .set('Content-Type', 'application/octet-stream')
                     .expect(200)
                     .expect('Content-Type', /text/)
-                    .end(function (err, res) {
+                    .end((err, res)=> {
                         if (err) {
                             done(err);
                             return;
@@ -115,15 +120,15 @@ describe('suiteSysEvent route use case test', function () {
                         done();
                     });
             });
-            it("should response success text to wechat server,and corp-create-auth topic message producer's  produceMessage methods can be call if InfoType is create_auth", function (done) {
-                var body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[create_auth]]></InfoType><TimeStamp>1403610513</TimeStamp></xml>";
+            it("should response success text to wechat server,and corp-create-auth topic message producer's  produceMessage methods can be call if InfoType is create_auth", done=> {
+                let body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[create_auth]]></InfoType><TimeStamp>1403610513</TimeStamp></xml>";
                 request(server)
                     .post(`/suites/smartgrid-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=create_auth`)
                     .send(body)
                     .set('Content-Type', 'application/octet-stream')
                     .expect(200)
                     .expect('Content-Type', /text/)
-                    .end(function (err, res) {
+                    .end((err, res)=> {
                         if (err) {
                             done(err);
                             return;
@@ -132,15 +137,15 @@ describe('suiteSysEvent route use case test', function () {
                         done();
                     });
             });
-            it("should response success text to wechat server,and corp-cancel-auth topic message producer's  produceMessage methods can be call if InfoType is cancel_auth", function (done) {
-                var body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[cancel_auth]]></InfoType><TimeStamp>1403610513</TimeStamp></xml>";
+            it("should response success text to wechat server,and corp-cancel-auth topic message producer's  produceMessage methods can be call if InfoType is cancel_auth", done=> {
+                let body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[cancel_auth]]></InfoType><TimeStamp>1403610513</TimeStamp></xml>";
                 request(server)
                     .post(`/suites/smartgrid-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=cancel_auth`)
                     .send(body)
                     .set('Content-Type', 'application/octet-stream')
                     .expect(200)
                     .expect('Content-Type', /text/)
-                    .end(function (err, res) {
+                    .end((err, res)=> {
                         if (err) {
                             done(err);
                             return;
@@ -149,15 +154,15 @@ describe('suiteSysEvent route use case test', function () {
                         done();
                     });
             });
-            it("should response success text to wechat server,and corp-change-auth topic message producer's  produceMessage methods can be call if InfoType is change_auth", function (done) {
-                var body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[change_auth]]></InfoType><TimeStamp>1403610513</TimeStamp></xml>";
+            it("should response success text to wechat server,and corp-change-auth topic message producer's  produceMessage methods can be call if InfoType is change_auth", done=> {
+                let body = "<xml><SuiteId><![CDATA[SuiteId]]></SuiteId><InfoType> <![CDATA[change_auth]]></InfoType><TimeStamp>1403610513</TimeStamp></xml>";
                 request(server)
                     .post(`/suites/smartgrid-suite/suite-sys-event?msg_signature=signature&timestamp=1403610513&nonce=change_auth`)
                     .send(body)
                     .set('Content-Type', 'application/octet-stream')
                     .expect(200)
                     .expect('Content-Type', /text/)
-                    .end(function (err, res) {
+                    .end((err, res)=> {
                         if (err) {
                             done(err);
                             return;
@@ -168,16 +173,25 @@ describe('suiteSysEvent route use case test', function () {
             });
         });
     });
-    after(function (done) {
-        async.parallel([
-            function (callback) {
-                server.close(callback);
-            }], function (err, results) {
-            if (err) {
-                done(err);
-                return;
-            }
+    after(done=> {
+        function teardownExpress() {
+            return new Promise((resolve, reject)=> {
+                server.close(err=> {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+        };
+        function* teardown() {
+            yield teardownExpress();
+        };
+        co(teardown).then(()=> {
             done();
+        }).catch(err=> {
+            done(err);
         });
     });
 });

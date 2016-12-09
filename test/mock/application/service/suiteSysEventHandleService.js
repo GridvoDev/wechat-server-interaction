@@ -1,26 +1,26 @@
 'use strict';
 
-function Service() {
-};
+class Service {
 
-Service.prototype.handleSuiteTicketArriveSysEvent = function (sysEventData, callback) {
-    if (!sysEventData.SuiteId || !sysEventData.InfoType || !sysEventData.TimeStamp || !sysEventData.SuiteTicket) {
-        callback(null, false);
-        return;
+    handleSuiteTicketArriveSysEvent(sysEventData, callback) {
+        if (!sysEventData.SuiteId || !sysEventData.InfoType || !sysEventData.TimeStamp || !sysEventData.SuiteTicket) {
+            callback(null, false);
+            return;
+        }
+        callback(null, true);
     }
-    callback(null, true);
-};
 
-Service.prototype.handleCreateAuthSysEvent = function (sysEventData, callback) {
-    callback(null, true);
-};
+    handleCreateAuthSysEvent(sysEventData, callback) {
+        callback(null, true);
+    }
 
-Service.prototype.handleCancelAuthSysEvent = function (sysEventData, callback) {
-    callback(null, true);
-};
+    handleCancelAuthSysEvent(sysEventData, callback) {
+        callback(null, true);
+    }
 
-Service.prototype.handleChangeAuthSysEvent = function (sysEventData, callback) {
-    callback(null, true);
-};
+    handleChangeAuthSysEvent(sysEventData, callback) {
+        callback(null, true);
+    }
+}
 
 module.exports = Service;

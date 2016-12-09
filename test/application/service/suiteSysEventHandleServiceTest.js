@@ -1,22 +1,24 @@
 'use strict';
-var _ = require('underscore');
-var bearcat = require('bearcat');
-var should = require('should');
+const _ = require('underscore');
+const should = require('should');
+const muk = require('muk');
+const SuiteSysEventHandleService = require('../../../lib/application/service/suiteSysEventHandleService');
+const MockMessageProducer = require('../../mock/infrastructure/message/messageProducer');
 
-describe('suiteSysEventHandleService use case test', function () {
-    var service;
-    before(function (done) {
-        var contextPath = require.resolve('../../../unittest_application_bcontext.json');
-        bearcat.createApp([contextPath]);
-        bearcat.start(function () {
-            service = bearcat.getBean('suiteSysEventHandleService');
-            done();
-        });
+describe('suiteSysEventHandleService use case test', ()=> {
+    let service;
+    before(()=> {
+        service = new SuiteSysEventHandleService();
+        let mockMessageProducer = new MockMessageProducer();
+        muk(service, "__SuiteTicketArriveTopicProducer__", mockMessageProducer);
+        muk(service, "__CorpCreateAuthTopicProducer__", mockMessageProducer);
+        muk(service, "__CorpCancelAuthTopicProducer__", mockMessageProducer);
+        muk(service, "__CorpChangeAuthTopicProducer__", mockMessageProducer);
     });
-    describe('#handleSuiteTicketArriveSysEvent(sysEventData,callback)', function () {
-        context('wechat server push sys event infotype is suite_ticket)', function () {
-            it('return true if handle success', function (done) {
-                var sysEventData = {};
+    describe('#handleSuiteTicketArriveSysEvent(sysEventData,callback)', ()=> {
+        context('wechat server push sys event infotype is suite_ticket)', ()=> {
+            it('return true if handle success', done=> {
+                let sysEventData = {};
                 sysEventData.SuiteId = "wxfc918a2d200c9a4c";
                 sysEventData.InfoType = "suite_ticket";
                 sysEventData.TimeStamp = 1403610513;
@@ -28,10 +30,10 @@ describe('suiteSysEventHandleService use case test', function () {
             });
         });
     });
-    describe('#handleCreateAuthSysEvent(sysEventData,callback)', function () {
-        context('wechat server push sys event infotype is create_auth)', function () {
-            it('return true if handle success', function (done) {
-                var sysEventData = {};
+    describe('#handleCreateAuthSysEvent(sysEventData,callback)', ()=> {
+        context('wechat server push sys event infotype is create_auth)', ()=> {
+            it('return true if handle success', done=> {
+                let sysEventData = {};
                 sysEventData.SuiteId = "wxfc918a2d200c9a4c";
                 sysEventData.InfoType = "create_auth";
                 sysEventData.TimeStamp = 1403610513;
@@ -43,10 +45,10 @@ describe('suiteSysEventHandleService use case test', function () {
             });
         });
     });
-    describe('#handleCancelAuthSysEvent(sysEventData,callback)', function () {
-        context('wechat server push sys event infotype is cancel_auth)', function () {
-            it('return true if handle success', function (done) {
-                var sysEventData = {};
+    describe('#handleCancelAuthSysEvent(sysEventData,callback)', ()=> {
+        context('wechat server push sys event infotype is cancel_auth)', ()=> {
+            it('return true if handle success', done=> {
+                let sysEventData = {};
                 sysEventData.SuiteId = "wxfc918a2d200c9a4c";
                 sysEventData.InfoType = "cancel_auth";
                 sysEventData.TimeStamp = 1403610513;
@@ -58,10 +60,10 @@ describe('suiteSysEventHandleService use case test', function () {
             });
         });
     });
-    describe('#handleChangeAuthSysEvent(sysEventData,callback)', function () {
-        context('wechat server push sys event infotype is change_auth)', function () {
-            it('return true if handle success', function (done) {
-                var sysEventData = {};
+    describe('#handleChangeAuthSysEvent(sysEventData,callback)', ()=> {
+        context('wechat server push sys event infotype is change_auth)', ()=> {
+            it('return true if handle success', done=> {
+                let sysEventData = {};
                 sysEventData.SuiteId = "wxfc918a2d200c9a4c";
                 sysEventData.InfoType = "change_auth";
                 sysEventData.TimeStamp = 1403610513;
@@ -72,5 +74,8 @@ describe('suiteSysEventHandleService use case test', function () {
                 });
             });
         });
+    });
+    after(()=> {
+        muk.restore();
     });
 });

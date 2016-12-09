@@ -1,59 +1,75 @@
-var _ = require('underscore');
-var async = require('async');
-var bearcat = require('bearcat');
-var should = require('should');
-var request = require('supertest');
-var express = require('express');
-var authSuiteRouter = require('../../../../lib/express/routes/smartgridSuite/authSuite');
+const _ = require('underscore');
+const co = require('co');
+const should = require('should');
+const request = require('supertest');
+const express = require('express');
+const authSuiteRouter = require('../../../../lib/express/routes/smartgridSuite/authSuite');
+const MockAuthSuiteService = require('../../../mock/application/service/authSuiteService');
 
-describe('suiteSysEvent route use case test', function () {
-    var app;
-    var server;
-    before(function (done) {
-        async.waterfall([
-            function (callback) {
+describe('suiteSysEvent route use case test', ()=> {
+    let app;
+    let server;
+    before(done=> {
+        function setupExpress() {
+            return new Promise((resolve, reject)=> {
                 app = express();
                 app.use('/suites/smartgrid-suite', authSuiteRouter);
-                server = app.listen(3001, callback);
-            },
-            function (callback) {
-                var bearcatContextPath = require.resolve("../../../../unittest_express_bcontext.json");
-                bearcat.createApp([bearcatContextPath]);
-                bearcat.start(function () {
-                    app.set('bearcat', bearcat);
-                    callback(null);
+                let authSuiteService = new MockAuthSuiteService();
+                app.set('authSuiteService', authSuiteService);
+                server = app.listen(3001, err=> {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
                 });
-            }
-        ], function (err) {
-            if (err) {
-                done(err);
-                return;
-            }
+            });
+        };
+        function* setup() {
+            yield setupExpress();
+        };
+        co(setup).then(()=> {
+
             done();
+        }).catch(err=> {
+            done(err);
         });
     });
-    describe('#get:/suites/smartgrid-suite/auth-suite', function () {
-        context('corp auth this suite', function () {
-            it('should redirect to wechat server auth url', function (done) {
+    describe('#get:/suites/smartgrid-suite/auth-suite', ()=> {
+        context('corp auth this suite', ()=> {
+            it('should redirect to wechat server auth url', done=> {
                 request(server)
                     .get(`/suites/smartgrid-suite/auth-suite`)
                     .expect(302)
-                    .end(()=> {
+                    .end((err)=> {
+                        if (err) {
+                            done(err);
+                            return;
+                        }
                         done();
                     });
             });
         });
     });
-    after(function (done) {
-        async.parallel([
-            function (callback) {
-                server.close(callback);
-            }], function (err, results) {
-            if (err) {
-                done(err);
-                return;
-            }
+    after(done=> {
+        function teardownExpress() {
+            return new Promise((resolve, reject)=> {
+                server.close(err=> {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+        };
+        function* teardown() {
+            yield teardownExpress();
+        };
+        co(teardown).then(()=> {
             done();
+        }).catch(err=> {
+            done(err);
         });
     });
 });

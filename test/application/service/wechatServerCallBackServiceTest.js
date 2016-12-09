@@ -1,49 +1,48 @@
 'use strict';
-var _ = require('underscore');
-var bearcat = require('bearcat');
-var should = require('should');
+const _ = require('underscore');
+const should = require('should');
+const muk = require('muk');
+const WechatServerCallBackService = require('../../../lib/application/service/wechatServerCallBackService');
+const MockWeChatCrypto = require('../../mock/external/weChatCrypto');
 
-describe('wechatServerCallBackService use case test', function () {
-    var service;
-    before(function (done) {
-        var contextPath = require.resolve('../../../unittest_application_bcontext.json');
-        bearcat.createApp([contextPath]);
-        bearcat.start(function () {
-            service = bearcat.getBean('wechatServerCallBackService');
-            done();
-        });
+describe('wechatServerCallBackService use case test', ()=> {
+    let service;
+    before(()=> {
+        service = new WechatServerCallBackService();
+        let mockWeChatCrypto = new MockWeChatCrypto();
+        muk(service, "__WeChatCrypto__", mockWeChatCrypto);
     });
-    describe('#authCallBackURLSyn(authParameter)', function () {
-        context('auth call back url return echostr #authURL(authParameter)', function () {
-            it('return null if urlParameter no signature,timestamp,nonce,encrypt', function () {
-                var authParameter = {};
+    describe('#authCallBackURLSyn(authParameter)', ()=> {
+        context('auth call back url return echostr #authURL(authParameter)', ()=> {
+            it('return null if urlParameter no signature,timestamp,nonce,encrypt', ()=> {
+                let authParameter = {};
                 authParameter.signature = "signature";
-                var echostr = service.authCallBackURLSyn(authParameter);
+                let echostr = service.authCallBackURLSyn(authParameter);
                 _.isNull(echostr).should.be.eql(true);
             });
-            it('return echostr if urlParameter is ok', function () {
-                var authParameter = {};
+            it('return echostr if urlParameter is ok', ()=> {
+                let authParameter = {};
                 authParameter.signature = "signature";
                 authParameter.timestamp = 13500001234;
                 authParameter.nonce = "nonce";
                 authParameter.encrypt = "encrypt";
-                var echostr = service.authCallBackURLSyn(authParameter);
+                let echostr = service.authCallBackURLSyn(authParameter);
                 echostr.should.be.eql("echostr");
             });
         });
     });
-    describe('#parseCallBackData(parseParameter, data)', function () {
-        context('parse call back data from wechat server', function () {
-            it('return null if parseParameter no signature,timestamp,nonce,cbXMLString', function (done) {
-                var parseParameter = {};
+    describe('#parseCallBackData(parseParameter, data)', ()=> {
+        context('parse call back data from wechat server', ()=> {
+            it('return null if parseParameter no signature,timestamp,nonce,cbXMLString', done=> {
+                let parseParameter = {};
                 parseParameter.signature = "signature";
                 service.parseCallBackData(parseParameter, (err, data)=> {
                     _.isNull(data).should.be.eql(true);
                     done();
                 });
             });
-            it('return data if parseParameter is ok', function (done) {
-                var parseParameter = {};
+            it('return data if parseParameter is ok', done=> {
+                let parseParameter = {};
                 parseParameter.signature = "signature";
                 parseParameter.timestamp = new Date();
                 parseParameter.nonce = "nonce";
@@ -55,5 +54,8 @@ describe('wechatServerCallBackService use case test', function () {
                 });
             });
         });
+    });
+    after(()=> {
+        muk.restore();
     });
 });
