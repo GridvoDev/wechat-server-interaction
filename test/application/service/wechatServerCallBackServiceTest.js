@@ -10,7 +10,7 @@ describe('wechatServerCallBackService use case test', ()=> {
     before(()=> {
         service = new WechatServerCallBackService();
         let mockWeChatCrypto = new MockWeChatCrypto();
-        muk(service, "__WeChatCrypto__", mockWeChatCrypto);
+        muk(service, "_weChatCrypto", mockWeChatCrypto);
     });
     describe('#authCallBackURLSyn(authParameter)', ()=> {
         context('auth call back url return echostr #authURL(authParameter)', ()=> {

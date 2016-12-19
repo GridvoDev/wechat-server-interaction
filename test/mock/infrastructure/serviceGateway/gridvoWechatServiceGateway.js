@@ -1,7 +1,7 @@
 'use strict';
 
 class Gateway {
-    getSuiteAuthUrl(suiteID, callback) {
+    getSuiteAuthUrl(suiteID, traceContext, callback) {
         if (suiteID == "suiteID") {
             callback(null, "suite-auth-url");
         }

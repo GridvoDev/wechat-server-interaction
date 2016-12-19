@@ -10,12 +10,9 @@ describe('suiteSysEventHandleService use case test', ()=> {
     before(()=> {
         service = new SuiteSysEventHandleService();
         let mockMessageProducer = new MockMessageProducer();
-        muk(service, "__SuiteTicketArriveTopicProducer__", mockMessageProducer);
-        muk(service, "__CorpCreateAuthTopicProducer__", mockMessageProducer);
-        muk(service, "__CorpCancelAuthTopicProducer__", mockMessageProducer);
-        muk(service, "__CorpChangeAuthTopicProducer__", mockMessageProducer);
+        muk(service, "_messageProducer", mockMessageProducer);
     });
-    describe('#handleSuiteTicketArriveSysEvent(sysEventData,callback)', ()=> {
+    describe('#handleSuiteTicketArriveSysEvent(sysEventData,traceContext,callback)', ()=> {
         context('wechat server push sys event infotype is suite_ticket)', ()=> {
             it('return true if handle success', done=> {
                 let sysEventData = {};
@@ -23,14 +20,14 @@ describe('suiteSysEventHandleService use case test', ()=> {
                 sysEventData.InfoType = "suite_ticket";
                 sysEventData.TimeStamp = 1403610513;
                 sysEventData.SuiteTicket = "suiteticket";
-                service.handleSuiteTicketArriveSysEvent(sysEventData, (err, isSuccess)=> {
+                service.handleSuiteTicketArriveSysEvent(sysEventData, {}, (err, isSuccess)=> {
                     isSuccess.should.be.eql(true);
                     done();
                 });
             });
         });
     });
-    describe('#handleCreateAuthSysEvent(sysEventData,callback)', ()=> {
+    describe('#handleCreateAuthSysEvent(sysEventData,traceContext,callback)', ()=> {
         context('wechat server push sys event infotype is create_auth)', ()=> {
             it('return true if handle success', done=> {
                 let sysEventData = {};
@@ -38,14 +35,14 @@ describe('suiteSysEventHandleService use case test', ()=> {
                 sysEventData.InfoType = "create_auth";
                 sysEventData.TimeStamp = 1403610513;
                 sysEventData.AuthCode = "AuthCode";
-                service.handleCreateAuthSysEvent(sysEventData, (err, isSuccess)=> {
+                service.handleCreateAuthSysEvent(sysEventData, {}, (err, isSuccess)=> {
                     isSuccess.should.be.eql(true);
                     done();
                 });
             });
         });
     });
-    describe('#handleCancelAuthSysEvent(sysEventData,callback)', ()=> {
+    describe('#handleCancelAuthSysEvent(sysEventData,traceContext,callback)', ()=> {
         context('wechat server push sys event infotype is cancel_auth)', ()=> {
             it('return true if handle success', done=> {
                 let sysEventData = {};
@@ -53,14 +50,14 @@ describe('suiteSysEventHandleService use case test', ()=> {
                 sysEventData.InfoType = "cancel_auth";
                 sysEventData.TimeStamp = 1403610513;
                 sysEventData.AuthCorpId = "wxf8b4f85f3a794e77";
-                service.handleCancelAuthSysEvent(sysEventData, (err, isSuccess)=> {
+                service.handleCancelAuthSysEvent(sysEventData, {}, (err, isSuccess)=> {
                     isSuccess.should.be.eql(true);
                     done();
                 });
             });
         });
     });
-    describe('#handleChangeAuthSysEvent(sysEventData,callback)', ()=> {
+    describe('#handleChangeAuthSysEvent(sysEventData,traceContext,callback)', ()=> {
         context('wechat server push sys event infotype is change_auth)', ()=> {
             it('return true if handle success', done=> {
                 let sysEventData = {};
@@ -68,7 +65,7 @@ describe('suiteSysEventHandleService use case test', ()=> {
                 sysEventData.InfoType = "change_auth";
                 sysEventData.TimeStamp = 1403610513;
                 sysEventData.AuthCorpId = "wxf8b4f85f3a794e77";
-                service.handleChangeAuthSysEvent(sysEventData, (err, isSuccess)=> {
+                service.handleChangeAuthSysEvent(sysEventData, {}, (err, isSuccess)=> {
                     isSuccess.should.be.eql(true);
                     done();
                 });
