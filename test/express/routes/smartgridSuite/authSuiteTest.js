@@ -5,6 +5,7 @@ const request = require('supertest');
 const express = require('express');
 const authSuiteRouter = require('../../../../lib/express/routes/smartgridSuite/authSuite');
 const MockAuthSuiteService = require('../../../mock/application/service/authSuiteService');
+const {expressZipkinMiddleware, createZipkinTracer} = require("gridvo-common-js");
 
 describe('suiteSysEvent route use case test', ()=> {
     let app;
@@ -13,6 +14,10 @@ describe('suiteSysEvent route use case test', ()=> {
         function setupExpress() {
             return new Promise((resolve, reject)=> {
                 app = express();
+                app.use(expressZipkinMiddleware({
+                    tracer: createZipkinTracer({}),
+                    serviceName: 'test-service'
+                }));
                 app.use('/suites/smartgrid-suite', authSuiteRouter);
                 let authSuiteService = new MockAuthSuiteService();
                 app.set('authSuiteService', authSuiteService);

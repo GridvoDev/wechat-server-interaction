@@ -1,14 +1,14 @@
 'use strict';
 
 class Service {
-    authCallBackURLSyn(authParameter) {
+    authCallBackURLSyn(authParameter, traceContext) {
         if (!authParameter.signature || !authParameter.timestamp || !authParameter.nonce || !authParameter.encrypt) {
             return null;
         }
         return "echostr";
     }
 
-    parseCallBackData(parseParameter, callback) {
+    parseCallBackData(parseParameter, traceContext, callback) {
         if (!parseParameter.signature || !parseParameter.timestamp || !parseParameter.nonce || !parseParameter.cbXMLString) {
             callback(null, null);
             return;

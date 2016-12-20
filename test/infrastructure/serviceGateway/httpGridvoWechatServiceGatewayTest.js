@@ -65,7 +65,6 @@ describe('HttpGridvoWechatServiceGateway use case test', ()=> {
             });
             it('is ok', done=> {
                 gateway.getSuiteAuthUrl("suiteID", traceContext, (err, url)=> {
-                    console.log(err);
                     url.should.be.eql("suite-auth-url");
                     done();
                 });
@@ -91,6 +90,6 @@ describe('HttpGridvoWechatServiceGateway use case test', ()=> {
             done();
         }).catch(err=> {
             done(err);
-        });
+        })
     });
 });

@@ -1,7 +1,8 @@
 'use strict';
 const kafka = require('kafka-node');
 const express = require('express');
-const {AuthSuiteService, WechatServerCallBackService, SuiteSysEventHandleService} = require('./lib/application');
+const {logger} = require('./lib/util');
+const {createAuthSuiteService, createWechatServerCallBackService, createSuiteSysEventHandleService} = require('./lib/application');
 const {smartgridSuiteAuthSuiteRouter, smartgridSuiteCompleteAuthRouter, smartgridSuiteSuiteSysEventRouter, smartgridSuiteWaterStationUserEventRouter} = require('./lib/express');
 
 let app;
@@ -15,7 +16,7 @@ initProducer.on('ready', function () {
         "corp-change-auth",
         "corp-cancel-auth"], true, (err)=> {
         if (err) {
-            console.log(err);
+            logger.error(err.message);
             return;
         }
         client.refreshMetadata(["suite-ticket-arrive",
@@ -23,24 +24,30 @@ initProducer.on('ready', function () {
             "corp-change-auth",
             "corp-cancel-auth"], ()=> {
             initProducer.close(()=> {
-                console.log("wechat-server-interaction service init topics success");
+                logger.info("init kafka topics success");
             });
         });
     });
 });
 initProducer.on('error', (err)=> {
-    console.log(err);
+    logger.error(err.message);
 });
 app = express();
 app.use('/suites/smartgrid-suite', smartgridSuiteAuthSuiteRouter);
 app.use('/suites/smartgrid-suite', smartgridSuiteCompleteAuthRouter);
 app.use('/suites/smartgrid-suite', smartgridSuiteSuiteSysEventRouter);
 app.use('/suites/smartgrid-suite/apps/water-station', smartgridSuiteWaterStationUserEventRouter);
-let authSuiteService = new AuthSuiteService();
+let authSuiteService = createAuthSuiteService();
 app.set('authSuiteService', authSuiteService);
-let wechatServerCallBackService = new WechatServerCallBackService();
+let wechatServerCallBackService = createWechatServerCallBackService();
 app.set('wechatServerCallBackService', wechatServerCallBackService);
-let suiteSysEventHandleService = new SuiteSysEventHandleService();
+let suiteSysEventHandleService = createSuiteSysEventHandleService();
 app.set('suiteSysEventHandleService', suiteSysEventHandleService);
-app.listen(3001);
-console.log("wechat-server-interaction service is starting...");
+app.listen(3001, (err)=> {
+    if (err) {
+        logger.error(err.message);
+    }
+    else {
+        logger.info("express server is starting");
+    }
+});

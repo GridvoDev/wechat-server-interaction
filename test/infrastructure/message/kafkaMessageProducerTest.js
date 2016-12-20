@@ -7,8 +7,36 @@ const KafkaMessageProducer = require('../../../lib/infrastructure/message/kafkaM
 describe('KafkaMessageProducer(topic, options) use case test', ()=> {
     let messageProducer;
     let consumer;
-    before(()=> {
-        messageProducer = new KafkaMessageProducer();
+    before(done=> {
+        let {ZOOKEEPER_SERVICE_HOST = "127.0.0.1", ZOOKEEPER_SERVICE_PORT = "2181"} = process.env;
+        let client = new kafka.Client(
+            `${ZOOKEEPER_SERVICE_HOST}:${ZOOKEEPER_SERVICE_PORT}`,
+            "wechat-server-interaction-producer-client");
+        let initProducer = new kafka.Producer(client);
+        initProducer.on('ready', ()=> {
+            initProducer.createTopics(["suite-ticket-arrive",
+                "corp-create-auth",
+                "corp-change-auth",
+                "corp-cancel-auth"], true, (err, data)=> {
+                if (err) {
+                    done(err)
+                }
+                client.refreshMetadata(["suite-ticket-arrive",
+                    "corp-create-auth",
+                    "corp-change-auth",
+                    "corp-cancel-auth"], (err)=> {
+                    if (err) {
+                        done(err)
+                    }
+                    messageProducer = new KafkaMessageProducer();
+                    done();
+                    initProducer.close();
+                });
+            });
+        });
+        initProducer.on('error', (err)=> {
+            done(err);
+        });
     });
     describe('#produce{Topic}Message(message, traceContext, callback)', ()=> {
         context('produce topic message', ()=> {

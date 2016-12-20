@@ -7,6 +7,7 @@ const express = require('express');
 const userEventRouter = require('../../../../../lib/express/routes/smartgridSuite/waterStation/userEvent');
 const MockSuiteSysEventHandleService = require('../../../../mock/application/service/suiteSysEventHandleService');
 const MockWechatServerCallBackService = require('../../../../mock/application/service/wechatServerCallBackService');
+const {expressZipkinMiddleware, createZipkinTracer} = require("gridvo-common-js");
 
 describe('suiteSysEvent route use case test', ()=> {
     let app;
@@ -15,6 +16,10 @@ describe('suiteSysEvent route use case test', ()=> {
         function setupExpress() {
             return new Promise((resolve, reject)=> {
                 app = express();
+                app.use(expressZipkinMiddleware({
+                    tracer: createZipkinTracer({}),
+                    serviceName: 'test-service'
+                }));
                 app.use('/suites/smartgrid-suite/apps/water-station', userEventRouter);
                 let suiteSysEventHandleService = new MockSuiteSysEventHandleService();
                 app.set('suiteSysEventHandleService', suiteSysEventHandleService);
@@ -64,7 +69,7 @@ describe('suiteSysEvent route use case test', ()=> {
                             done(err);
                             return;
                         }
-                        res.text.should.be.eql("WeChat server had auth this URL");
+                        res.text.should.be.eql("weChat server had auth this url");
                         done();
                     });
             });

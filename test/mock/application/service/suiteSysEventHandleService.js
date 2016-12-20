@@ -2,7 +2,7 @@
 
 class Service {
 
-    handleSuiteTicketArriveSysEvent(sysEventData, callback) {
+    handleSuiteTicketArriveSysEvent(sysEventData, traceContext, callback) {
         if (!sysEventData.SuiteId || !sysEventData.InfoType || !sysEventData.TimeStamp || !sysEventData.SuiteTicket) {
             callback(null, false);
             return;
@@ -10,15 +10,15 @@ class Service {
         callback(null, true);
     }
 
-    handleCreateAuthSysEvent(sysEventData, callback) {
+    handleCreateAuthSysEvent(sysEventData, traceContext, callback) {
         callback(null, true);
     }
 
-    handleCancelAuthSysEvent(sysEventData, callback) {
+    handleCancelAuthSysEvent(sysEventData, traceContext, callback) {
         callback(null, true);
     }
 
-    handleChangeAuthSysEvent(sysEventData, callback) {
+    handleChangeAuthSysEvent(sysEventData, traceContext, callback) {
         callback(null, true);
     }
 }

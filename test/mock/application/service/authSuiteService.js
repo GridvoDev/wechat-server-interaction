@@ -2,7 +2,7 @@
 
 class Service {
 
-    getSuiteAuthURL(suiteID, callback) {
+    getSuiteAuthURL(suiteID, traceContext, callback) {
         if (!suiteID) {
             callback(null, null);
             return;
@@ -10,7 +10,7 @@ class Service {
         callback(null, "suite-auth-url");
     }
 
-    completeAuth(suiteID, authCode, callback) {
+    completeAuth(suiteID, authCode, traceContext, callback) {
         if (authCode == "fail") {
             callback(null, false);
             return;
