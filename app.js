@@ -1,9 +1,10 @@
 'use strict';
 const kafka = require('kafka-node');
 const express = require('express');
-const {logger} = require('./lib/util');
+const {logger, tracer} = require('./lib/util');
 const {createAuthSuiteService, createWechatServerCallBackService, createSuiteSysEventHandleService} = require('./lib/application');
 const {smartgridSuiteAuthSuiteRouter, smartgridSuiteCompleteAuthRouter, smartgridSuiteSuiteSysEventRouter, smartgridSuiteWaterStationUserEventRouter} = require('./lib/express');
+const {expressZipkinMiddleware} = require("gridvo-common-js");
 
 let app;
 let {ZOOKEEPER_SERVICE_HOST = "127.0.0.1", ZOOKEEPER_SERVICE_PORT = "2181"} = process.env;
@@ -14,7 +15,8 @@ initProducer.on('ready', function () {
     initProducer.createTopics(["suite-ticket-arrive",
         "corp-create-auth",
         "corp-change-auth",
-        "corp-cancel-auth"], true, (err)=> {
+        "corp-cancel-auth",
+        "zipkin"], true, (err)=> {
         if (err) {
             logger.error(err.message);
             return;
@@ -22,7 +24,8 @@ initProducer.on('ready', function () {
         client.refreshMetadata(["suite-ticket-arrive",
             "corp-create-auth",
             "corp-change-auth",
-            "corp-cancel-auth"], ()=> {
+            "corp-cancel-auth",
+            "zipkin"], ()=> {
             initProducer.close(()=> {
                 logger.info("init kafka topics success");
             });
@@ -33,6 +36,10 @@ initProducer.on('error', (err)=> {
     logger.error(err.message);
 });
 app = express();
+app.use(expressZipkinMiddleware({
+    tracer: tracer,
+    serviceName: 'wechat-server-interaction'
+}));
 app.use('/suites/smartgrid-suite', smartgridSuiteAuthSuiteRouter);
 app.use('/suites/smartgrid-suite', smartgridSuiteCompleteAuthRouter);
 app.use('/suites/smartgrid-suite', smartgridSuiteSuiteSysEventRouter);
