@@ -12,12 +12,12 @@ describe('wechatServerCallBackService use case test', ()=> {
         let mockWeChatCrypto = new MockWeChatCrypto();
         muk(service, "_weChatCrypto", mockWeChatCrypto);
     });
-    describe('#authCallBackURLSyn(authParameter)', ()=> {
+    describe('#authCallBackURLSyn(authParameter,traceContext)', ()=> {
         context('auth call back url return echostr #authURL(authParameter)', ()=> {
             it('return null if urlParameter no signature,timestamp,nonce,encrypt', ()=> {
                 let authParameter = {};
                 authParameter.signature = "signature";
-                let echostr = service.authCallBackURLSyn(authParameter);
+                let echostr = service.authCallBackURLSyn(authParameter, {});
                 _.isNull(echostr).should.be.eql(true);
             });
             it('return echostr if urlParameter is ok', ()=> {
@@ -26,17 +26,17 @@ describe('wechatServerCallBackService use case test', ()=> {
                 authParameter.timestamp = 13500001234;
                 authParameter.nonce = "nonce";
                 authParameter.encrypt = "encrypt";
-                let echostr = service.authCallBackURLSyn(authParameter);
+                let echostr = service.authCallBackURLSyn(authParameter, {});
                 echostr.should.be.eql("echostr");
             });
         });
     });
-    describe('#parseCallBackData(parseParameter, data)', ()=> {
+    describe('#parseCallBackData(parseParameter, traceContext, callback)', ()=> {
         context('parse call back data from wechat server', ()=> {
             it('return null if parseParameter no signature,timestamp,nonce,cbXMLString', done=> {
                 let parseParameter = {};
                 parseParameter.signature = "signature";
-                service.parseCallBackData(parseParameter, (err, data)=> {
+                service.parseCallBackData(parseParameter, {}, (err, data)=> {
                     _.isNull(data).should.be.eql(true);
                     done();
                 });
@@ -47,7 +47,7 @@ describe('wechatServerCallBackService use case test', ()=> {
                 parseParameter.timestamp = new Date();
                 parseParameter.nonce = "nonce";
                 parseParameter.cbXMLString = "<xml><ToUserName><![CDATA[toUser]]></ToUserName><AgentID><![CDATA[toAgentID]]></AgentID><Encrypt><![CDATA[msg_encrypt]]></Encrypt></xml>";
-                service.parseCallBackData(parseParameter, (err, data)=> {
+                service.parseCallBackData(parseParameter, {}, (err, data)=> {
                     data.ToUserName.should.be.eql("userID");
                     data.MsgType.should.be.eql("event");
                     done();
