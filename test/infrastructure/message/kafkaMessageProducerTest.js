@@ -44,6 +44,9 @@ describe('KafkaMessageProducer(topic, options) use case test', ()=> {
                 let message = null;
                 let traceContext = {};
                 messageProducer.produceSuiteTicketArriveTopicMessage(message, traceContext, (err, data)=> {
+                    if(err){
+                        done(err);
+                    }
                     _.isNull(data).should.be.eql(true);
                     done();
                 });
@@ -56,6 +59,9 @@ describe('KafkaMessageProducer(topic, options) use case test', ()=> {
                 };
                 let traceContext = {};
                 messageProducer.produceSuiteTicketArriveTopicMessage(message, traceContext, (err, data)=> {
+                    if(err){
+                        done(err);
+                    }
                     _.isNull(data).should.be.eql(false);
                     let {ZOOKEEPER_SERVICE_HOST = "127.0.0.1", ZOOKEEPER_SERVICE_PORT = "2181"} = process.env;
                     let client = new kafka.Client(`${ZOOKEEPER_SERVICE_HOST}:${ZOOKEEPER_SERVICE_PORT}`);
