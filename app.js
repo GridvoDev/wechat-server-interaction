@@ -27,7 +27,7 @@ initProducer.on('ready', function () {
             "corp-cancel-auth",
             "zipkin"], ()=> {
             initProducer.close(()=> {
-                logger.info("init kafka topics success");
+                logger.info("wechat-server-interaction init kafka topics success");
             });
         });
     });
@@ -55,6 +55,6 @@ app.listen(3001, (err)=> {
         logger.error(err.message);
     }
     else {
-        logger.info("express server is starting");
+        logger.info("wechat-server-interaction express server is starting");
     }
 });
