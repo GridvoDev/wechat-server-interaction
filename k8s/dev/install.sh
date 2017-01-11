@@ -23,8 +23,10 @@ if [ "$?" == "1" ];then
 else
 	kubectl delete -f wechat_server_interaction-deployment.yaml
 	kubectl get pods | grep -q wechat-server-interaction
-	while ( "$?" == "1" )
+	while ( "$?" == "0" )
 	do
+	kubectl get pods | grep -q wechat-server-interaction
+	done
 	kubectl create -f wechat_server_interaction-deployment.yaml --record
 	kubectl get pods | grep -q wechat-server-interaction
 	if [ "$?" == "0" ];then
@@ -32,5 +34,4 @@ else
 	else
 		echo "wechat_server_interaction-deployment update fail!"
 	fi
-	done
 fi
