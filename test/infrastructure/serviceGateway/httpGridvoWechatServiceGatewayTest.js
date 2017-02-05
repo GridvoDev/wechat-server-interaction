@@ -29,7 +29,7 @@ describe('HttpGridvoWechatServiceGateway use case test', () => {
                         });
                     }
                 });
-                app.get('/suites/:suiteID/corp-users', (req, res) => {
+                app.get('/suites/:suiteID/:corpID/corp-users', (req, res) => {
                     if (req.query.code == "code") {
                         res.json({
                             errcode: 200,
@@ -76,12 +76,18 @@ describe('HttpGridvoWechatServiceGateway use case test', () => {
         context('get suite auth url)', () => {
             it('should return null if no this suite or other fail', done => {
                 gateway.getSuiteAuthUrl("noSuiteID", traceContext, (err, url) => {
+                    if(err){
+                        done(err);
+                    }
                     _.isNull(url).should.be.eql(true);
                     done();
                 });
             });
             it('is ok', done => {
                 gateway.getSuiteAuthUrl("suiteID", traceContext, (err, url) => {
+                    if(err){
+                        done(err);
+                    }
                     url.should.be.eql("suite-auth-url");
                     done();
                 });
@@ -99,12 +105,18 @@ describe('HttpGridvoWechatServiceGateway use case test', () => {
         context('get corp user)', () => {
             it('should return null if have fail', done => {
                 gateway.getCorpUser("corpID", "suiteID", "failCode", traceContext, (err, corpUserJSON) => {
+                    if(err){
+                        done(err);
+                    }
                     _.isNull(corpUserJSON).should.be.eql(true);
                     done();
                 });
             });
             it('is ok', done => {
                 gateway.getCorpUser("corpID", "suiteID", "code", traceContext, (err, corpUserJSON) => {
+                    if(err){
+                        done(err);
+                    }
                     corpUserJSON.userID.should.be.eql("wechat-user-id");
                     done();
                 });
