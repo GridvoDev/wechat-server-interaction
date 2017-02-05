@@ -18,3 +18,5 @@ spec:
         env:
         - name: ZK_TRACER_HTTP
           value: "true"             
+        - name: SG_WECHAT_PORTAL_DOMAIN
+          value: "pascal.gridvo.com"

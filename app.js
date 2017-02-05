@@ -2,8 +2,19 @@
 const kafka = require('kafka-node');
 const express = require('express');
 const {logger, tracer} = require('./lib/util');
-const {createAuthSuiteService, createWechatServerCallBackService, createSuiteSysEventHandleService} = require('./lib/application');
-const {smartgridSuiteAuthSuiteRouter, smartgridSuiteCompleteAuthRouter, smartgridSuiteSuiteSysEventRouter, smartgridSuiteWaterStationUserEventRouter} = require('./lib/express');
+const {
+    createUserService,
+    createAuthSuiteService,
+    createWechatServerCallBackService,
+    createSuiteSysEventHandleService
+} = require('./lib/application');
+const {
+    smartgridSuiteAuthSuiteRouter,
+    smartgridSuiteCompleteAuthRouter,
+    smartgridSuiteSuiteSysEventRouter,
+    smartgridSuiteWaterStationUserEventRouter,
+    smartgridSuiteWaterStationUserAuthRouter
+} = require('./lib/express');
 const {expressZipkinMiddleware} = require("gridvo-common-js");
 
 let app;
@@ -16,7 +27,7 @@ initProducer.on('ready', function () {
         "corp-create-auth",
         "corp-change-auth",
         "corp-cancel-auth",
-        "zipkin"], true, (err)=> {
+        "zipkin"], true, (err) => {
         if (err) {
             logger.error(err.message);
             return;
@@ -25,14 +36,14 @@ initProducer.on('ready', function () {
             "corp-create-auth",
             "corp-change-auth",
             "corp-cancel-auth",
-            "zipkin"], ()=> {
-            initProducer.close(()=> {
+            "zipkin"], () => {
+            initProducer.close(() => {
                 logger.info("wechat-server-interaction init kafka topics success");
             });
         });
     });
 });
-initProducer.on('error', (err)=> {
+initProducer.on('error', (err) => {
     logger.error(err.message);
 });
 app = express();
@@ -44,13 +55,16 @@ app.use('/suites/smartgrid-suite', smartgridSuiteAuthSuiteRouter);
 app.use('/suites/smartgrid-suite', smartgridSuiteCompleteAuthRouter);
 app.use('/suites/smartgrid-suite', smartgridSuiteSuiteSysEventRouter);
 app.use('/suites/smartgrid-suite/apps/water-station', smartgridSuiteWaterStationUserEventRouter);
+app.use('/suites/smartgrid-suite/apps/water-station', smartgridSuiteWaterStationUserAuthRouter);
+let userService = createUserService();
+app.set('userService', userService);
 let authSuiteService = createAuthSuiteService();
 app.set('authSuiteService', authSuiteService);
 let wechatServerCallBackService = createWechatServerCallBackService();
 app.set('wechatServerCallBackService', wechatServerCallBackService);
 let suiteSysEventHandleService = createSuiteSysEventHandleService();
 app.set('suiteSysEventHandleService', suiteSysEventHandleService);
-app.listen(3001, (err)=> {
+app.listen(3001, (err) => {
     if (err) {
         logger.error(err.message);
     }
