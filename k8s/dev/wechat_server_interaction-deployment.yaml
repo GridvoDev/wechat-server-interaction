@@ -1,17 +1,20 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
+  labels:
+    name: wechat-server-interaction
   name: wechat-server-interaction
+  namespace: gridvo
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: wechat-server-interaction
+        name: wechat-server-interaction
     spec:
       containers:
       - name: wechat-server-interaction
-        image: 10.0.2.62:5000/gridvo/wechat-server-interaction:dev
+        image: 10.0.3.31:5000/gridvo/wechat-server-interaction:dev
         imagePullPolicy: Always
         ports:
         - containerPort: 3001
