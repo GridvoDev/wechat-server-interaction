@@ -10,7 +10,7 @@ RUN ["npm","install","--save","rest@2.0.0"]
 RUN ["npm","install","--save","underscore@1.8.3"]
 RUN ["npm","install","--save","wechat-crypto@0.0.2"]
 RUN ["npm","install","--save","xml2js@0.4.17"]
-RUN ["npm","install","--save","gridvo-common-js@0.0.22"]
+RUN ["npm","install","--save","gridvo-common-js@0.0.23"]
 COPY ./app.js app.js
 COPY ./lib lib
 VOLUME ["/home/wechat-server-interaction"]
